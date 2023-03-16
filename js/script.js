@@ -8,26 +8,9 @@ const piSign = document.getElementById("pi--sign");
 const percentSign = document.getElementById("percent--sign");
 
 
-// const powerSign = document.getElementById("power--sign");
-// const divisionSign = document.getElementById("division--sign");
-// const sevenSign = document.getElementById("seven--sign");
-// const eightSign = document.getElementById("eight--sign");
-// const nineSign = document.getElementById("nine--sign");
-// const productSign = document.getElementById("product--sign");
-// const fourSign = document.getElementById("four--sign");
-// const fiveSign = document.getElementById("five--sign");
-// const sixSign = document.getElementById("six--sign");
-// const lessSign = document.getElementById("less--sign");
-// const oneSign = document.getElementById("one--sign");
-// const twoSign = document.getElementById("two--sign");
-// const threeSign = document.getElementById("three--sign");
-// const plusSign = document.getElementById("plus--sign");
-// const zeroSign = document.getElementById("zero--sign");
-// const dotSign = document.getElementById("dot--sign");
-
-
-let e = 0;
-let dotAfterOper = 0;
+let e = 0;  // To clean the cache (e=0 it's clean; e=1 it needs to clean)
+let dotAfterOper = 0;  // Allows to add more points after a sign operator
+let calculation = "";  // Save the string to evaluate with eval() behind the screen
 
 // Showing on screen
 const numbersArray = Array.from(numbers);
@@ -36,20 +19,22 @@ numbersArray.forEach((number) => {
         
         // Cleaning after click on equal sign
         if (e == 1) {
+            calculation = "";
             screen.textContent = "";
             e = 0;
         }
 
-        // Adding value to dot button
-        if (number.textContent === ".") {
-            number.value = ".";
-        }
-
-        // Cleaning the screen
+        // Cleaning the screen and calculation string
         if (screen.textContent == "Screen") {
+            calculation = "";
             screen.textContent = "";
         }
 
+        // Adding value to dot button
+        // if (number.textContent === ".") {
+        //     number.value = ".";
+        // }
+        
         // Verifing not reapeat dot
         if (number.textContent === "." && screen.textContent.includes(".") && dotAfterOper == 0) {
             number.value = "";
@@ -58,13 +43,16 @@ numbersArray.forEach((number) => {
             dotAfterOper = 0;
         }
 
-        // Concatenating on screen
+        // Concatenating on screen and calculation string
+        calculation += number.value;
         screen.textContent += number.value;
+
     });
 });
 
-// Clear screen
+// Clear screen with C button
 cSign.addEventListener("click", () => {
+    calculation = "";
     screen.textContent = "Screen";
     e = 0;
 });
@@ -74,9 +62,11 @@ const operatorsArray = Array.from(operators);
 operatorsArray.forEach((operator) => {
     operator.addEventListener("click", () => {
         if (screen.textContent == "Screen") {
+            calculation = "";
             screen.textContent = "";
         }
-        screen.textContent += operator.value;
+        calculation += operator.value;
+        screen.textContent += operator.textContent;
         dotAfterOper = 1;
         e = 0;
     });
@@ -85,36 +75,73 @@ operatorsArray.forEach((operator) => {
 // Showing constants
 piSign.addEventListener("click", () => {
     if (screen.textContent == "Screen") {
+        calculation = "";
         screen.textContent = "";
     }
 
-    piSign.value = Math.PI.toFixed(5);
-    if (screen.textContent.match(/[0-9.]/)) {
-        screen.textContent += "*" + piSign.value;
-        e = 0;
-    } else {
-        screen.textContent += piSign.value;
+    if (e == 1) {
+        calculation = "";
+        screen.textContent = "";
         e = 0;
     }
+
+    piSign.value = Math.PI;
+    e = 0;
+    screen.textContent += piSign.textContent;
+
+    // 
+    if (screen.textContent.match("[0-9.]π") && !screen.textContent.match("÷π")) {
+        calculation += "*" + piSign.value;
+    } else if (screen.textContent.match("[0-9.]xπ") || screen.textContent.match("π")) {
+        calculation += piSign.value;
+    } 
+    
+    // In the case of division we need to group numbers in parenthesis.
+    if (screen.textContent.match("[0-9.]π÷[0-9.]π") || screen.textContent.match("π÷[0-9.]π")) {
+        console.log(calculation);
+        let result = screen.textContent.match(/[0-9.]π+/g);
+        console.log(result);
+        for (let val of result) {
+            val = val.replace("π", `*${Math.PI}`);
+            calculation = calculation.replace(val, `(${val})`);
+        }
+    } else if (screen.textContent.match("[0-9.]xπ÷[0-9.]xπ") || screen.textContent.match("π÷[0-9.]xπ")) {
+        let result = screen.textContent.match(/[0-9.]xπ+/g);
+        for (let val of result) {
+            val = val.replace("xπ", `*${Math.PI}`);
+            calculation = calculation.replace(val, `(${val})`);
+        }
+    } 
 });
 
 
 // Calculating percentage
 percentSign.addEventListener("click", () => {
     if (screen.textContent == "Screen") {
+        calculation = "";
         screen.textContent = "";
     }
 
-    screen.textContent += percentSign.value;
+    calculation += percentSign.value;
+    screen.textContent += percentSign.textContent;
     
 });
 
 
 // Evaluating operations
 equalSign.addEventListener("click", () => {
+    console.log(calculation);
+
     try {
-        screen.textContent = eval(screen.textContent);
-        e = 1;
+        if (screen.textContent == "Screen") {
+            screen.textContent = "Screen";
+        } else if (screen.textContent.includes("xx") || screen.textContent.includes("÷÷")) {
+            screen.textContent = "Error";
+            e = 1;
+        } else {
+            screen.textContent = eval(calculation);
+            e = 1;
+        }
     } 
     catch (error) {
         screen.textContent = "Error";
