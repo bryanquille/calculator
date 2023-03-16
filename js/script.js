@@ -4,30 +4,31 @@ const screen = document.getElementById("screen");
 const cSign = document.getElementById("c--sign");
 const operators = document.querySelectorAll(".operator");
 const equalSign = document.getElementById("equal--sign");
-
-
-const percentSign = document.getElementById("percent--sign");
-const powerSign = document.getElementById("power--sign");
-const divisionSign = document.getElementById("division--sign");
-const sevenSign = document.getElementById("seven--sign");
-const eightSign = document.getElementById("eight--sign");
-const nineSign = document.getElementById("nine--sign");
-const productSign = document.getElementById("product--sign");
-const fourSign = document.getElementById("four--sign");
-const fiveSign = document.getElementById("five--sign");
-const sixSign = document.getElementById("six--sign");
-const lessSign = document.getElementById("less--sign");
-const oneSign = document.getElementById("one--sign");
-const twoSign = document.getElementById("two--sign");
-const threeSign = document.getElementById("three--sign");
-const plusSign = document.getElementById("plus--sign");
-const zeroSign = document.getElementById("zero--sign");
-const dotSign = document.getElementById("dot--sign");
 const piSign = document.getElementById("pi--sign");
+const percentSign = document.getElementById("percent--sign");
+
+
+// const powerSign = document.getElementById("power--sign");
+// const divisionSign = document.getElementById("division--sign");
+// const sevenSign = document.getElementById("seven--sign");
+// const eightSign = document.getElementById("eight--sign");
+// const nineSign = document.getElementById("nine--sign");
+// const productSign = document.getElementById("product--sign");
+// const fourSign = document.getElementById("four--sign");
+// const fiveSign = document.getElementById("five--sign");
+// const sixSign = document.getElementById("six--sign");
+// const lessSign = document.getElementById("less--sign");
+// const oneSign = document.getElementById("one--sign");
+// const twoSign = document.getElementById("two--sign");
+// const threeSign = document.getElementById("three--sign");
+// const plusSign = document.getElementById("plus--sign");
+// const zeroSign = document.getElementById("zero--sign");
+// const dotSign = document.getElementById("dot--sign");
 
 
 let e = 0;
 let dotAfterOper = 0;
+
 // Showing on screen
 const numbersArray = Array.from(numbers);
 numbersArray.forEach((number) => {
@@ -92,10 +93,25 @@ piSign.addEventListener("click", () => {
 });
 
 
-// Evaluating operations
-equalSign.addEventListener("click", () => {
-    screen.textContent = eval(screen.textContent);
-    e = 1;
+// Calculating percentage
+percentSign.addEventListener("click", () => {
+    if (screen.textContent == "Screen") {
+        screen.textContent = "";
+    }
+
+    screen.textContent += percentSign.value;
+    
 });
 
 
+// Evaluating operations
+equalSign.addEventListener("click", () => {
+    try {
+        screen.textContent = eval(screen.textContent);
+        e = 1;
+    } 
+    catch (error) {
+        screen.textContent = "Error";
+        e = 1;
+    }
+});
