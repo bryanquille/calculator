@@ -87,9 +87,15 @@ piSign.addEventListener("click", () => {
     if (screen.textContent == "Screen") {
         screen.textContent = "";
     }
+
     piSign.value = Math.PI.toFixed(5);
-    screen.textContent += piSign.value;
-    e = 0;
+    if (screen.textContent.match(/[0-9.]/)) {
+        screen.textContent += "*" + piSign.value;
+        e = 0;
+    } else {
+        screen.textContent += piSign.value;
+        e = 0;
+    }
 });
 
 
